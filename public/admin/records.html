@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>核销记录 - 咖啡卡</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="header">
+    <h1>核销记录</h1>
+    <button class="header-btn" id="logoutBtn">退出</button>
+  </div>
+
+  <div id="recordsList">
+    <div class="loading">加载中...</div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <a href="/h5/admin/scan.html">
+      <span class="nav-icon">📷</span>
+      扫码核销
+    </a>
+    <a href="/h5/admin/records.html" class="active">
+      <span class="nav-icon">📋</span>
+      核销记录
+    </a>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    if (!requireAuth()) { /* redirect */ }
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      clearAuth();
+      window.location.href = '/admin/login.html';
+    });
+
+    const typeMap = {
+      issue: '开卡',
+      consume: '消费',
+      recharge: '充值',
+      undo: '撤销',
+    };
+
+    async function loadRecords() {
+      try {
+        const res = await apiRequest('/admin/transactions?pageSize=50');
+        const list = res.data.list;
+        const container = document.getElementById('recordsList');
+
+        if (!list.length) {
+          container.innerHTML = '<div class="empty">暂无记录</div>';
+          return;
+        }
+
+        container.innerHTML = list.map(item => `
+          <div class="record-item">
+            <div class="record-header">
+              <span><strong>${item.customer_name}</strong> ${item.customer_phone}</span>
+              <span class="tag tag-${item.type === 'consume' ? 'exhausted' : item.type === 'recharge' ? 'active' : 'value'}">${typeMap[item.type] || item.type}</span>
+            </div>
+            <div class="record-detail">
+              <div>卡号: ${item.card_no} | ${item.card_type === 'value' ? '储值卡' : '次卡'}</div>
+              <div>
+                ${item.amount !== null ? `金额: ¥${item.amount}` : ''}
+                ${item.count !== null ? `次数: ${item.count}` : ''}
+                ${item.balance_after !== null ? ` → 余额: ¥${item.balance_after}` : ''}
+                ${item.count_after !== null ? ` → 剩余: ${item.count_after}次` : ''}
+              </div>
+              <div>操作人: ${item.operator_name} | ${new Date(item.created_at).toLocaleString()}</div>
+              ${item.note ? `<div>备注: ${item.note}</div>` : ''}
+              ${item.type === 'consume' && !item.is_undone ? `<div style="text-align: right; margin-top: 8px;"><button class="btn btn-outline" style="padding: 4px 12px; font-size: 12px; height: auto;" onclick="window.undoTransaction(${item.id})">撤销此笔核销</button></div>` : ''}
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        document.getElementById('recordsList').innerHTML = `<div class="empty">加载失败: ${err.message}</div>`;
+      }
+    }
+
+    window.undoTransaction = async function(id) {
+      if (!confirm('确定要撤销这条记录吗？撤销后将退回此次扣减的金额或次数。')) return;
+      try {
+        await apiRequest(`/admin/transactions/${id}/undo`, { method: 'POST' });
+        window.showToast('撤销成功！');
+        loadRecords();
+      } catch (err) {
+        window.showToast(err.message);
+      }
+    };
+
+    loadRecords();
+  </script>
+</body>
+</html>

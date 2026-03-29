@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>扫码核销 - 咖啡卡</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <script src="js/html5-qrcode.min.js"></script>
+</head>
+<body>
+  <div class="header">
+    <h1>扫码核销</h1>
+    <button class="header-btn" id="logoutBtn">退出</button>
+  </div>
+
+  <!-- Scan button -->
+  <div class="scan-entry">
+    <button class="scan-btn" id="openScannerBtn" onclick="openScanner()">
+      <span class="scan-btn-icon">📷</span>
+      <span>扫描会员卡二维码</span>
+    </button>
+  </div>
+
+  <!-- Divider -->
+  <div class="divider-row">
+    <span class="divider-line"></span>
+    <span class="divider-text">或手动输入</span>
+    <span class="divider-line"></span>
+  </div>
+
+  <!-- Manual input -->
+  <div class="manual-input">
+    <div class="input-group">
+      <input type="tel" id="phoneInput" placeholder="输入客户手机号" maxlength="11">
+      <button class="btn btn-primary" onclick="lookupCardsByPhone()" style="width:80px">查询</button>
+    </div>
+  </div>
+
+  <!-- Card selection list (hidden by default) -->
+  <div id="cardSelectSection" style="display:none;margin:16px;">
+    <h3 style="margin-bottom: 12px; font-size: 16px;">请选择卡片：</h3>
+    <div id="cardSelectList"></div>
+  </div>
+
+  <!-- Card info (hidden by default) -->
+  <div id="cardInfoSection" style="display:none">
+    <div class="card-info">
+      <div class="row">
+        <span class="label">卡号</span>
+        <span class="value" id="cardNo"></span>
+      </div>
+      <div class="row">
+        <span class="label">客户</span>
+        <span class="value" id="customerName"></span>
+      </div>
+      <div class="row">
+        <span class="label">类型</span>
+        <span id="cardType"></span>
+      </div>
+      <div class="row">
+        <span class="label">余额/次数</span>
+        <span class="value" id="cardBalance"></span>
+      </div>
+      <div class="row">
+        <span class="label">状态</span>
+        <span id="cardStatus"></span>
+      </div>
+    </div>
+
+    <!-- Consume form -->
+    <div class="consume-form" id="consumeForm">
+      <input type="number" id="consumeAmount" placeholder="消费金额" step="0.01" min="0.01">
+      <input type="text" id="consumeNote" placeholder="备注（可选）">
+      <button class="btn btn-success" onclick="consumeCard()">确认核销</button>
+    </div>
+  </div>
+
+  <!-- Scanner overlay -->
+  <div class="scanner-overlay" id="scannerOverlay" style="display:none">
+    <div class="scanner-header">
+      <button class="scanner-close-btn" onclick="closeScanner()">✕</button>
+      <span>扫描二维码</span>
+      <span style="width:32px"></span>
+    </div>
+    <div class="scanner-body">
+      <div id="qr-reader"></div>
+      <p class="scanner-tip">请将会员卡二维码对准摄像头</p>
+    </div>
+  </div>
+
+  <!-- Success overlay -->
+  <div class="success-overlay" id="successOverlay" style="display:none">
+    <div class="success-card">
+      <div class="checkmark">✓</div>
+      <h3>核销成功</h3>
+      <p id="successDetail"></p>
+      <button class="btn btn-primary" onclick="resetPage()" style="margin-top:16px">继续核销</button>
+      <button class="btn btn-outline" style="margin-top:12px" onclick="undoLastTransaction()">撤销此笔操作</button>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <a href="/h5/admin/scan.html" class="active">
+      <span class="nav-icon">📷</span>
+      扫码核销
+    </a>
+    <a href="/h5/admin/records.html">
+      <span class="nav-icon">📋</span>
+      核销记录
+    </a>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/admin-app.js"></script>
+</body>
+</html>

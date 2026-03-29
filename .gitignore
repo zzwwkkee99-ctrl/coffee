@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Build output
+admin-web/dist/
+
+# Environment variables
+.env
+server/.env
+
+# Logs
+logs/
+server/logs/
+*.log
+
+# SSL certificates
+24163073_coffee.boyanxg.com_nginx/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+download_fonts.py
+.agents/skills/superpower

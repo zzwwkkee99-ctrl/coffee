@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>卡片详情 - 咖啡会员</title>
+  <link rel="stylesheet" href="css/customer.css">
+  <script src="js/qrcode.min.js"></script>
+</head>
+<body>
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <button class="back-btn" onclick="window.location.href='/h5/customer/cards.html'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <span style="font-size:18px;font-weight:700">卡片详情</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="cardDetail">
+    <div class="loading">加载中...</div>
+  </div>
+
+  <div class="qr-container" id="qrSection" style="display:none">
+    <h3>出示二维码给店员扫码</h3>
+    <canvas id="qrCanvas"></canvas>
+    <div class="qr-tip">请将此二维码出示给店员进行核销</div>
+  </div>
+
+  <div class="transaction-section" id="txSection" style="display:none">
+    <h3>交易记录</h3>
+    <div id="txList">
+      <div class="loading">加载中...</div>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/qrcode-render.js"></script>
+  <script src="js/card-detail.js"></script>
+</body>
+</html>
